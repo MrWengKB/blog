@@ -1,28 +1,16 @@
 :root {
-  --paper: #f3f6f2;
-  --ink: #1e2b2f;
-  --muted: #5e6b6e;
+  --paper: #ffffff;
+  --ink: #000000;
+  --muted: #666666;
   --accent: #34558a;
-  --rule: #d3dbd5;
-  --code-bg: #e6ece7;
+  --rule: #e2e2e2;
+  --code-bg: #f2f2f2;
   --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
   --sans: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #172024;
-    --ink: #e4eae6;
-    --muted: #93a0a2;
-    --accent: #93b2e2;
-    --rule: #2d393d;
-    --code-bg: #222d31;
-    color-scheme: dark;
-  }
 }
 
 *, *::before, *::after { box-sizing: inherit; }
