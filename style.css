@@ -1,0 +1,154 @@
+:root {
+  --paper: #f3f6f2;
+  --ink: #1e2b2f;
+  --muted: #5e6b6e;
+  --accent: #34558a;
+  --rule: #d3dbd5;
+  --code-bg: #e6ece7;
+  --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --sans: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #172024;
+    --ink: #e4eae6;
+    --muted: #93a0a2;
+    --accent: #93b2e2;
+    --rule: #2d393d;
+    --code-bg: #222d31;
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: inherit; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.85;
+}
+
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------- 刊头 ---------- */
+.masthead {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 2.5rem;
+}
+.brand {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-cat { width: 4.5rem; height: 4.5rem; flex: none; }
+.brand-cat .fill { fill: var(--ink); }
+.brand-cat .line { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.brand-cat .thin { stroke-width: 2; }
+.brand-title {
+  margin: 0;
+  font-size: clamp(1.9rem, 6.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- 正文区 ---------- */
+.content {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+  min-height: 50vh;
+}
+
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-item { padding: 1.6rem 0; border-top: 1px solid var(--rule); }
+.post-item:last-child { border-bottom: 1px solid var(--rule); }
+.post-item time {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.post-item h2 { margin: 0.2rem 0 0.4rem; font-size: 1.35rem; line-height: 1.4; }
+.post-item h2 a { color: var(--ink); text-decoration: none; }
+.post-item h2 a:hover { color: var(--accent); }
+.post-item p { margin: 0; color: var(--muted); font-size: 1rem; }
+
+/* ---------- 单篇文章 ---------- */
+.back {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.back:hover { text-decoration: underline; }
+
+.post-header { margin: 1.5rem 0 2rem; }
+.post-header h2 { margin: 0 0 0.4rem; font-size: clamp(1.6rem, 5vw, 2.1rem); line-height: 1.35; }
+.post-header time { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
+
+.post-body { overflow-wrap: anywhere; }
+.post-body p { margin: 0 0 1.2em; }
+.post-body h1, .post-body h2, .post-body h3 { line-height: 1.4; margin: 2em 0 0.6em; }
+.post-body h1 { font-size: 1.5rem; }
+.post-body h2 { font-size: 1.3rem; }
+.post-body h3 { font-size: 1.1rem; }
+.post-body img { max-width: 100%; height: auto; display: block; margin: 1.5em auto; }
+.post-body blockquote {
+  margin: 1.5em 0;
+  padding: 0 0 0 1.1em;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+.post-body code {
+  font-size: 0.88em;
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+.post-body pre {
+  background: var(--code-bg);
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+.post-body pre code { background: none; padding: 0; }
+.post-body hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5em 0; }
+.post-body table { display: block; overflow-x: auto; border-collapse: collapse; }
+.post-body th, .post-body td { border: 1px solid var(--rule); padding: 0.4em 0.7em; }
+
+.post-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
+
+/* ---------- 提示信息 ---------- */
+.message { padding: 2rem 0; color: var(--muted); font-family: var(--sans); font-size: 1rem; }
+.message code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+
+/* ---------- 页脚 ---------- */
+.colophon {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  body { font-size: 17px; }
+  .masthead { padding-top: 2.5rem; }
+  .brand-cat { width: 3.5rem; height: 3.5rem; }
+}
