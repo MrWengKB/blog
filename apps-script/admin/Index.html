@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #ffffff;
+      --ink: #000000;
+      --muted: #666666;
+      --accent: #34558a;
+      --danger: #a3261d;
+      --rule: #e2e2e2;
+      --soft: #f2f2f2;
+      --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+      --sans: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; }
+    .wrap { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    h1 { font-family: var(--serif); font-size: 1.5rem; margin: 0; }
+    button, input, textarea { font: inherit; color: inherit; }
+    button {
+      border: 1px solid var(--ink); background: var(--paper); border-radius: 4px;
+      padding: 0.45rem 0.9rem; cursor: pointer; white-space: nowrap;
+    }
+    button.primary { background: var(--ink); color: var(--paper); }
+    button.danger { border-color: var(--danger); color: var(--danger); }
+    button.link { border: 0; padding: 0.45rem 0; color: var(--accent); background: none; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .bar { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .bar .grow { flex: 1; }
+    [hidden] { display: none !important; }
+
+    /* 列表 */
+    .search { width: 100%; margin: 1.2rem 0 0.4rem; padding: 0.55rem 0.7rem; border: 1px solid var(--rule); border-radius: 4px; }
+    .count { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.6rem; }
+    .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+    .list li { border-bottom: 1px solid var(--rule); }
+    .list button {
+      display: block; width: 100%; text-align: left; border: 0; border-radius: 0;
+      padding: 0.8rem 0.2rem; background: none;
+    }
+    .list button:hover { background: var(--soft); }
+    .list .t { font-family: var(--serif); font-weight: 700; font-size: 1.05rem; }
+    .list .d { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
+
+    /* 编辑 */
+    .meta { color: var(--muted); font-size: 0.85rem; margin: 1rem 0 0.4rem; }
+    .title-input {
+      width: 100%; border: 0; border-bottom: 1px solid var(--rule); padding: 0.4rem 0;
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+    }
+    .tabs { display: flex; gap: 1rem; margin: 1rem 0 0.5rem; border-bottom: 1px solid var(--rule); }
+    .tabs button { border: 0; border-radius: 0; padding: 0.4rem 0; background: none; color: var(--muted); }
+    .tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+    .body-input {
+      width: 100%; min-height: 55vh; border: 1px solid var(--rule); border-radius: 4px;
+      padding: 0.8rem; font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; resize: vertical;
+    }
+    .preview {
+      min-height: 55vh; padding: 0.2rem 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.85;
+      overflow-wrap: anywhere;
+    }
+    .preview img { max-width: 100%; height: auto; }
+    .preview blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid var(--accent); color: var(--muted); }
+    .preview pre { white-space: pre-wrap; }
+    .hint { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; }
+    .actions { margin-top: 1rem; }
+
+    .status { margin: 1rem 0; padding: 0.6rem 0.8rem; background: var(--soft); border-radius: 4px; font-size: 0.9rem; }
+    .status.error { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- 列表 -->
+    <section id="listView">
+      <div class="bar">
+        <h1 class="grow">博客管理</h1>
+        <button class="primary" id="newBtn">写新文章</button>
+      </div>
+      <input class="search" id="search" type="search" placeholder="搜索标题或内容" aria-label="搜索文章">
+      <p class="count" id="count">正在载入文章…</p>
+      <ul class="list" id="list"></ul>
+    </section>
+
+    <!-- 编辑 -->
+    <section id="editView" hidden>
+      <div class="bar">
+        <button class="link" id="backBtn">‹ 返回列表</button>
+      </div>
+      <p class="meta" id="meta"></p>
+      <input class="title-input" id="title" placeholder="标题" aria-label="标题">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tabWrite" aria-selected="true">编辑</button>
+        <button role="tab" id="tabPreview" aria-selected="false">预览</button>
+      </div>
+      <textarea class="body-input" id="body" placeholder="正文，支持 Markdown，直接按 Enter 换行" aria-label="正文"></textarea>
+      <div class="preview" id="preview" hidden></div>
+      <div class="bar actions">
+        <button class="primary" id="saveBtn">发表</button>
+        <span class="grow"></span>
+        <button class="danger" id="deleteBtn" hidden>删除</button>
+      </div>
+    </section>
+
+    <p class="status" id="status" role="status" hidden></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var $ = function (id) { return document.getElementById(id); };
+    var posts = [];
+    var current = null;   // 正在编辑的文章；新文章时为 { key: null }
+    var saved = null;     // 上次保存的内容，用来判断有没有未保存的修改
+    var busy = false;
+
+    marked.setOptions({ gfm: true, breaks: true });
+
+    // ---------- 工具 ----------
+    function call(name, arg) {
+      return new Promise(function (resolve, reject) {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](arg);
+      });
+    }
+    function formatDate(iso) {
+      var d = new Date(iso);
+      return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日 " +
+        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+    function showStatus(text, isError) {
+      var el = $("status");
+      el.textContent = text;
+      el.className = "status" + (isError ? " error" : "");
+      el.hidden = !text;
+    }
+    function setBusy(on, label) {
+      busy = on;
+      ["saveBtn", "deleteBtn", "newBtn"].forEach(function (id) { $(id).disabled = on; });
+      if (label) $("saveBtn").textContent = label;
+    }
+    function isDirty() {
+      return current && ($("title").value !== saved.title || $("body").value !== saved.body);
+    }
+
+    // ---------- 列表 ----------
+    function renderList() {
+      var q = $("search").value.trim().toLowerCase();
+      var shown = posts.filter(function (p) {
+        return !q || p.title.toLowerCase().indexOf(q) !== -1 || p.body.toLowerCase().indexOf(q) !== -1;
+      });
+      $("count").textContent = q ? "找到 " + shown.length + " 篇" : "共 " + posts.length + " 篇文章";
+      var list = $("list");
+      list.textContent = "";
+      shown.forEach(function (p) {
+        var li = document.createElement("li");
+        var btn = document.createElement("button");
+        var t = document.createElement("div");
+        var d = document.createElement("div");
+        t.className = "t"; t.textContent = p.title || "无题";
+        d.className = "d"; d.textContent = formatDate(p.time);
+        btn.appendChild(t); btn.appendChild(d);
+        btn.addEventListener("click", function () { openEditor(p); });
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function loadPosts() {
+      return call("listPosts").then(function (data) {
+        posts = data;
+        renderList();
+      }).catch(function (err) {
+        $("count").textContent = "";
+        showStatus("文章载入失败：" + err.message, true);
+      });
+    }
+
+    // ---------- 编辑 ----------
+    function openEditor(post) {
+      current = post || { key: null, title: "", body: "" };
+      saved = { title: current.title, body: current.body };
+      $("title").value = current.title;
+      $("body").value = current.body;
+      $("meta").textContent = current.key ? "发布于 " + formatDate(current.time) : "新文章";
+      $("saveBtn").textContent = current.key ? "保存修改" : "发表";
+      $("deleteBtn").hidden = !current.key;
+      switchTab(false);
+      showStatus("");
+      $("listView").hidden = true;
+      $("editView").hidden = false;
+      window.scrollTo(0, 0);
+      if (!current.key) $("title").focus();
+    }
+
+    function closeEditor() {
+      if (isDirty() && !confirm("有未保存的修改，确定要离开吗？")) return;
+      current = null;
+      $("editView").hidden = true;
+      $("listView").hidden = false;
+      showStatus("");
+      renderList();
+    }
+
+    function switchTab(preview) {
+      $("tabWrite").setAttribute("aria-selected", String(!preview));
+      $("tabPreview").setAttribute("aria-selected", String(preview));
+      $("body").hidden = preview;
+      $("preview").hidden = !preview;
+      if (preview) {
+        $("preview").innerHTML = DOMPurify.sanitize(marked.parse($("body").value || "")) ||
+          '<p style="color:var(--muted)">还没有内容。</p>';
+      }
+    }
+
+    function save() {
+      if (busy) return;
+      var isNew = !current.key;
+      var post = { key: current.key, title: $("title").value, body: $("body").value };
+      if (!post.title.trim() && !post.body.trim()) { showStatus("标题和内容不能都是空的。", true); return; }
+      setBusy(true, isNew ? "发表中…" : "保存中…");
+      call("savePost", post).then(function (res) {
+        current.key = res.key;
+        if (isNew) current.time = new Date(res.key).toISOString();
+        current.title = post.title; current.body = post.body;
+        saved = { title: post.title, body: post.body };
+        $("meta").textContent = "发布于 " + formatDate(current.time);
+        $("deleteBtn").hidden = false;
+        showStatus(res.warning || (isNew ? "已发表" : "已保存") + "，网站大约一分钟后更新。", !!res.warning);
+        return loadPosts();
+      }).catch(function (err) {
+        showStatus((isNew ? "发表" : "保存") + "失败：" + err.message, true);
+      }).then(function () {
+        setBusy(false, current && current.key ? "保存修改" : "发表");
+      });
+    }
+
+    function remove() {
+      if (busy || !current.key) return;
+      if (!confirm("确定删除「" + (current.title || "无题") + "」吗？删除后网站上也会移除。")) return;
+      setBusy(true);
+      call("deletePost", current.key).then(function (res) {
+        current = null;
+        $("editView").hidden = true;
+        $("listView").hidden = false;
+        showStatus(res.warning || "已删除，网站大约一分钟后更新。", !!res.warning);
+        return loadPosts();
+      }).catch(function (err) {
+        showStatus("删除失败：" + err.message, true);
+      }).then(function () { setBusy(false); });
+    }
+
+    // ---------- 事件 ----------
+    $("newBtn").addEventListener("click", function () { openEditor(null); });
+    $("backBtn").addEventListener("click", closeEditor);
+    $("search").addEventListener("input", renderList);
+    $("tabWrite").addEventListener("click", function () { switchTab(false); });
+    $("tabPreview").addEventListener("click", function () { switchTab(true); });
+    $("saveBtn").addEventListener("click", save);
+    $("deleteBtn").addEventListener("click", remove);
+    window.addEventListener("beforeunload", function (e) {
+      if (isDirty()) { e.preventDefault(); e.returnValue = ""; }
+    });
+
+    loadPosts();
+  })();
+  </script>
+</body>
+</html>
