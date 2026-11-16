@@ -1,0 +1,31 @@
+{%- comment -%} 两个下拉菜单：按标题跳到文章，按月份跳到归档 {%- endcomment -%}
+{%- assign months = site.posts | group_by_exp: "p", "p.date | date: '%Y-%m'" -%}
+<nav class="post-nav" aria-label="文章导航">
+  <select class="nav-select" aria-label="按标题查找文章" onchange="if (this.value) location.href = this.value">
+    <option value="">文章列表（{{ site.posts.size }} 篇）</option>
+    {%- for p in site.posts %}
+    <option value="{{ p.url | relative_url }}"{% if p.url == page.url %} selected{% endif %}>{{ p.title | escape }}</option>
+    {%- endfor %}
+  </select>
+  <select class="nav-select" id="month-select" aria-label="按月份浏览" onchange="if (this.value) location.href = this.value">
+    <option value="">按月份浏览</option>
+    {%- for m in months %}
+    {%- assign d = m.items.first.date %}
+    <option value="{{ '/archive/' | relative_url }}#{{ m.name }}">{{ d | date: "%Y" }}年{{ d | date: "%-m" }}月（{{ m.size }} 篇）</option>
+    {%- endfor %}
+  </select>
+</nav>
+<script>
+  // 在归档页时，让月份菜单显示当前看的月份
+  (function () {
+    var sel = document.getElementById("month-select");
+    function sync() {
+      if (!location.hash) return;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value.split("#")[1] === location.hash.slice(1)) { sel.selectedIndex = i; return; }
+      }
+    }
+    sync();
+    window.addEventListener("hashchange", sync);
+  })();
+</script>

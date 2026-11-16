@@ -1,0 +1,17 @@
+---
+layout: default
+title: 文章归档
+---
+{%- assign months = site.posts | group_by_exp: "p", "p.date | date: '%Y-%m'" -%}
+<h2 class="archive-title">文章归档</h2>
+{%- for m in months %}
+{%- assign d = m.items.first.date %}
+<section class="archive-month" id="{{ m.name }}">
+  <h3>{{ d | date: "%Y" }}年{{ d | date: "%-m" }}月</h3>
+  <ul>
+    {%- for p in m.items %}
+    <li><time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: "%-d" }}日</time><a href="{{ p.url | relative_url }}">{{ p.title | escape }}</a></li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endfor %}

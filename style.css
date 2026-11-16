@@ -156,3 +156,39 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-
 .pager a { text-decoration: none; }
 .pager a:hover { text-decoration: underline; }
 .pager-count { color: var(--muted); }
+
+/* ---------- 下拉菜单 ---------- */
+.post-nav {
+  max-width: 40rem;
+  margin: -1rem auto 2rem;
+  padding: 0 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.nav-select {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.5rem 2rem 0.5rem 0.7rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.nav-select:hover { border-color: var(--muted); }
+.nav-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- 归档页 ---------- */
+.archive-title { font-size: clamp(1.6rem, 5vw, 2.1rem); margin: 0 0 1rem; }
+.archive-month { padding: 1.2rem 0; border-top: 1px solid var(--rule); scroll-margin-top: 1rem; }
+.archive-month h3 { margin: 0 0 0.6rem; font-size: 1.15rem; }
+.archive-month ul { list-style: none; margin: 0; padding: 0; }
+.archive-month li { display: flex; gap: 0.9rem; padding: 0.25rem 0; }
+.archive-month time { flex: none; width: 2.6rem; color: var(--muted); font-family: var(--sans); font-size: 0.85rem; padding-top: 0.25rem; }
+.archive-month a { color: var(--ink); text-decoration: none; }
+.archive-month a:hover { color: var(--accent); }
