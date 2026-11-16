@@ -34,12 +34,12 @@
   }
 
   function makeExcerpt(text) {
-    var plain = String(text || "")
-      .replace(/!\[[^\]]*\]\([^)]*\)/g, "")      // 去掉图片
-      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")   // 链接只留文字
-      .replace(/[#>*_`~|]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
+    // 先把 Markdown / HTML 渲染出来，再只取纯文字，这样两种格式都不会露出标记
+    var box = document.createElement("div");
+    box.innerHTML = renderMarkdown(text)
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<\/(p|div|pre|li|h[1-6]|blockquote)>/gi, " $&");
+    var plain = (box.textContent || "").replace(/\s+/g, " ").trim();
     return plain.length > 90 ? plain.slice(0, 90) + "…" : plain;
   }
 
