@@ -140,3 +140,17 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-
   .masthead { padding-top: 2.5rem; }
   .brand-cat { width: 3.5rem; height: 3.5rem; }
 }
+
+/* ---------- 翻页 ---------- */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+.pager a { text-decoration: none; }
+.pager a:hover { text-decoration: underline; }
+.pager-count { color: var(--muted); }

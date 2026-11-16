@@ -4,6 +4,7 @@
   var app = document.getElementById("app");
   var CACHE_KEY = "meow-blog-posts";
   var SITE_TITLE = "喵喵喵老先生的博客";
+  var PAGE_SIZE = 5;
   var posts = null;
 
   document.getElementById("year").textContent = new Date().getFullYear();
@@ -60,20 +61,37 @@
     app.innerHTML = '<p class="message">' + html + "</p>";
   }
 
-  function renderList() {
-    document.title = SITE_TITLE;
+  function pageHref(n) { return n > 1 ? "#page-" + n : "#"; }
+
+  function renderList(page) {
     if (!posts.length) {
+      document.title = SITE_TITLE;
       renderMessage("还没有文章。用表单写下第一篇吧。");
       return;
     }
-    var items = posts.map(function (p) {
+    var total = Math.ceil(posts.length / PAGE_SIZE);
+    page = Math.min(Math.max(page || 1, 1), total);
+    document.title = page > 1 ? "第 " + page + " 页 - " + SITE_TITLE : SITE_TITLE;
+
+    // 只处理当前页的五篇，其余文章不渲染、不生成摘要
+    var start = (page - 1) * PAGE_SIZE;
+    var items = posts.slice(start, start + PAGE_SIZE).map(function (p) {
       return '<li class="post-item">' +
         '<time datetime="' + isoDate(p.time) + '">' + formatDate(p.time) + "</time>" +
         '<h2><a href="#p-' + encodeURIComponent(p.id) + '">' + escapeHtml(p.title || "无题") + "</a></h2>" +
         "<p>" + escapeHtml(makeExcerpt(p.body)) + "</p>" +
         "</li>";
     }).join("");
-    app.innerHTML = '<ul class="post-list">' + items + "</ul>";
+
+    var pager = "";
+    if (total > 1) {
+      pager = '<nav class="pager" aria-label="翻页">' +
+        (page > 1 ? '<a class="pager-prev" href="' + pageHref(page - 1) + '">‹ 较新的文章</a>' : "<span></span>") +
+        '<span class="pager-count">' + page + " / " + total + "</span>" +
+        (page < total ? '<a class="pager-next" href="' + pageHref(page + 1) + '">较旧的文章 ›</a>' : "<span></span>") +
+        "</nav>";
+    }
+    app.innerHTML = '<ul class="post-list">' + items + "</ul>" + pager;
   }
 
   function renderPost(id) {
@@ -84,10 +102,11 @@
         '<p class="message">找不到这篇文章，它可能已被删除。</p>';
       return;
     }
+    var back = '<a class="back" href="' + pageHref(Math.floor(posts.indexOf(post) / PAGE_SIZE) + 1) + '">‹ 返回文章列表</a>';
     var title = post.title || "无题";
     document.title = title + " - " + SITE_TITLE;
     app.innerHTML =
-      '<a class="back" href="#">‹ 返回文章列表</a>' +
+      back +
       "<article>" +
         '<header class="post-header">' +
           "<h2>" + escapeHtml(title) + "</h2>" +
@@ -95,14 +114,15 @@
         "</header>" +
         '<div class="post-body">' + renderMarkdown(post.body) + "</div>" +
       "</article>" +
-      '<footer class="post-footer"><a class="back" href="#">‹ 返回文章列表</a></footer>';
+      '<footer class="post-footer">' + back + "</footer>";
   }
 
   function route(scrollTop) {
     if (!posts) return;
     var match = location.hash.match(/^#p-(.+)$/);
+    var pageMatch = location.hash.match(/^#page-(\d+)$/);
     if (match) renderPost(decodeURIComponent(match[1]));
-    else renderList();
+    else renderList(pageMatch ? parseInt(pageMatch[1], 10) : 1);
     if (scrollTop) window.scrollTo(0, 0);
   }
 
