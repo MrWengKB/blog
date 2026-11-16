@@ -1,0 +1,19 @@
+---
+layout: default
+---
+{%- comment -%} 找出这篇文章在第几页，让“返回”回到那一页 {%- endcomment -%}
+{%- assign idx = 0 -%}
+{%- for p in site.posts -%}{%- if p.url == page.url -%}{%- assign idx = forloop.index0 -%}{%- endif -%}{%- endfor -%}
+{%- assign pg = idx | divided_by: site.paginate | plus: 1 -%}
+{%- if pg > 1 -%}{%- capture back_url -%}/page{{ pg }}/{%- endcapture -%}{%- else -%}{%- assign back_url = "/" -%}{%- endif -%}
+<a class="back" href="{{ back_url | relative_url }}">‹ 返回文章列表</a>
+<article>
+  <header class="post-header">
+    <h2>{{ page.title }}</h2>
+    <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y" }}年{{ page.date | date: "%-m" }}月{{ page.date | date: "%-d" }}日</time>
+  </header>
+  <div class="post-body">
+{{ content }}
+  </div>
+</article>
+<footer class="post-footer"><a class="back" href="{{ back_url | relative_url }}">‹ 返回文章列表</a></footer>

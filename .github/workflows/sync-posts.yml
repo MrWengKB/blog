@@ -1,0 +1,53 @@
+name: 同步表单文章
+
+on:
+  repository_dispatch:
+    types: [new-post]      # 表单提交后由 Apps Script 触发
+  schedule:
+    - cron: "17 19 * * *"  # 每天新加坡时间 03:17 兜底同步一次
+  workflow_dispatch:       # 也可以在 Actions 页面手动运行
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sync-posts
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 生成文章
+        run: |
+          npm install --no-save --no-package-lock marked@12
+          node .github/scripts/build-posts.mjs
+
+      - name: 提交变更
+        id: commit
+        run: |
+          git add -A _posts
+          if git diff --cached --quiet; then
+            echo "文章没有变化"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "同步表单文章"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 重新部署网站
+        if: steps.commit.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"

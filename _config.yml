@@ -1,0 +1,22 @@
+title: 喵喵喵老先生的博客
+description: 喵喵喵老先生的博客
+lang: zh-CN
+timezone: Asia/Singapore
+
+# 仓库名 blog → 网址 https://mrwengkb.github.io/blog/
+# 如果以后绑定自己的域名，把 baseurl 改成 ""
+url: https://mrwengkb.github.io
+baseurl: /blog
+
+# 文章数据来源：Apps Script 网页应用（由 GitHub Actions 读取）
+blog_api_url: https://script.google.com/macros/s/AKfycbw1X53BRam7KijP2rsXKf6zFl7KwshLNyFtQGnX_xsgGrM9XkJLyWN_Dzovo3Us_ug/exec
+
+permalink: /:year/:month/:day/:title/
+plugins:
+  - jekyll-paginate
+paginate: 5
+paginate_path: /page:num/
+
+exclude:
+  - .github
+  - README.md
