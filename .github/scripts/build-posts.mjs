@@ -36,7 +36,30 @@ function localParts(value) {
   return { day: `${p.year}-${p.month}-${p.day}`, clock: `${p.hour}${p.minute}${p.second}`, full: `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second} +0800` };
 }
 
-marked.setOptions({ gfm: true, breaks: true }); // 表单里的单个换行也保留
+marked.setOptions({ gfm: true, breaks: true }); // 单个换行也保留
+
+// HTML 段落（如导入的 <p>…</p>）里的文字也解析 Markdown 行内格式
+function inlineMarkdownInHtml(html) {
+  var out = "", skip = 0;
+  html.split(/(<[^>]*>)/).forEach(function (part, i) {
+    if (i % 2) {
+      if (/^<(pre|code|script|style)\b/i.test(part)) skip++;
+      else if (/^<\/(pre|code|script|style)>/i.test(part)) skip = Math.max(0, skip - 1);
+      out += part;
+    } else if (!skip && part.trim()) {
+      var lead = part.match(/^\s*/)[0], trail = part.match(/\s*$/)[0];
+      out += lead + marked.parseInline(part.trim(), { breaks: false }) + trail;
+    } else {
+      out += part;
+    }
+  });
+  return out;
+}
+marked.use({
+  renderer: {
+    html: function (html, block) { return block ? inlineMarkdownInHtml(html) : false; }
+  }
+});
 
 const posts = await loadPosts();
 if (!Array.isArray(posts) || posts.length === 0) {

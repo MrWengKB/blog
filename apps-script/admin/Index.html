@@ -149,6 +149,29 @@
 
     marked.setOptions({ gfm: true, breaks: true });
 
+    // HTML 段落（如导入的 <p>…</p>）里的文字也解析 Markdown 行内格式
+    function inlineMarkdownInHtml(html) {
+      var out = "", skip = 0;
+      html.split(/(<[^>]*>)/).forEach(function (part, i) {
+        if (i % 2) {
+          if (/^<(pre|code|script|style)\b/i.test(part)) skip++;
+          else if (/^<\/(pre|code|script|style)>/i.test(part)) skip = Math.max(0, skip - 1);
+          out += part;
+        } else if (!skip && part.trim()) {
+          var lead = part.match(/^\s*/)[0], trail = part.match(/\s*$/)[0];
+          out += lead + marked.parseInline(part.trim(), { breaks: false }) + trail;
+        } else {
+          out += part;
+        }
+      });
+      return out;
+    }
+    marked.use({
+      renderer: {
+        html: function (html, block) { return block ? inlineMarkdownInHtml(html) : false; }
+      }
+    });
+
     // ---------- 工具 ----------
     function call(name, arg) {
       return new Promise(function (resolve, reject) {
