@@ -14,6 +14,9 @@
     <option value="{{ '/archive/' | relative_url }}#{{ m.name }}">{{ d | date: "%Y" }}年{{ d | date: "%-m" }}月（{{ m.size }} 篇）</option>
     {%- endfor %}
   </select>
+  {%- unless page.url == "/archive/" %}
+  <a class="nav-link" href="{{ '/archive/' | relative_url }}">文章归档</a>
+  {%- endunless %}
 </nav>
 <script>
   // 在归档页时，让月份菜单显示当前看的月份

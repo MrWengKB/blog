@@ -181,6 +181,15 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-
   cursor: pointer;
 }
 .nav-select:hover { border-color: var(--muted); }
+.nav-link {
+  flex: none;
+  align-self: center;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-link:hover { text-decoration: underline; }
 .nav-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- 归档页 ---------- */
