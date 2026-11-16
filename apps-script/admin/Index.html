@@ -74,6 +74,16 @@
 
     .status { margin: 1rem 0; padding: 0.6rem 0.8rem; background: var(--soft); border-radius: 4px; font-size: 0.9rem; }
     .status.error { color: var(--danger); }
+
+    /* 格式按钮 */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem; }
+    .toolbar button { min-width: 2.3rem; padding: 0.3rem 0.6rem; border-color: var(--rule); }
+    .toolbar button:hover { border-color: var(--ink); }
+    .toolbar .b { font-weight: 700; }
+    .toolbar .i { font-style: italic; font-family: var(--serif); }
+    .swatches { display: flex; gap: 0.35rem; align-items: center; }
+    .swatches button { min-width: 0; width: 1.7rem; height: 1.7rem; padding: 0; border-radius: 50%; border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--rule); }
+    .swatches button:hover { box-shadow: 0 0 0 1px var(--ink); }
   </style>
 </head>
 <body>
@@ -99,6 +109,20 @@
       <div class="tabs" role="tablist">
         <button role="tab" id="tabWrite" aria-selected="true">编辑</button>
         <button role="tab" id="tabPreview" aria-selected="false">预览</button>
+      </div>
+      <div class="toolbar" id="toolbar" aria-label="格式">
+        <button type="button" class="b" data-fmt="bold" title="粗体（Ctrl/⌘+B）">B</button>
+        <button type="button" class="i" data-fmt="italic" title="斜体（Ctrl/⌘+I）">I</button>
+        <button type="button" data-fmt="link" title="链接（Ctrl/⌘+K）">链接</button>
+        <button type="button" id="colorBtn" aria-expanded="false" title="文字颜色">颜色</button>
+        <span class="swatches" id="swatches" hidden>
+          <button type="button" data-color="#c0392b" style="background:#c0392b" aria-label="红色"></button>
+          <button type="button" data-color="#d35400" style="background:#d35400" aria-label="橙色"></button>
+          <button type="button" data-color="#27855a" style="background:#27855a" aria-label="绿色"></button>
+          <button type="button" data-color="#34558a" style="background:#34558a" aria-label="蓝色"></button>
+          <button type="button" data-color="#7d3c98" style="background:#7d3c98" aria-label="紫色"></button>
+          <button type="button" data-color="#888888" style="background:#888888" aria-label="灰色"></button>
+        </span>
       </div>
       <textarea class="body-input" id="body" placeholder="正文，支持 Markdown，直接按 Enter 换行" aria-label="正文"></textarea>
       <div class="preview" id="preview" hidden></div>
@@ -214,6 +238,7 @@
       $("tabWrite").setAttribute("aria-selected", String(!preview));
       $("tabPreview").setAttribute("aria-selected", String(preview));
       $("body").hidden = preview;
+      $("toolbar").hidden = preview;
       $("preview").hidden = !preview;
       if (preview) {
         $("preview").innerHTML = DOMPurify.sanitize(marked.parse($("body").value || "")) ||
@@ -257,6 +282,66 @@
         showStatus("删除失败：" + err.message, true);
       }).then(function () { setBusy(false); });
     }
+
+    // ---------- 格式按钮 ----------
+    // 用 insertText 插入，这样可以用 Ctrl/⌘+Z 撤销
+    function replaceSelection(text, selStart, selEnd) {
+      var ta = $("body");
+      ta.focus();
+      var start = ta.selectionStart;
+      if (!document.execCommand || !document.execCommand("insertText", false, text)) {
+        ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
+      }
+      ta.setSelectionRange(start + selStart, start + selEnd);
+    }
+
+    function wrap(before, after, placeholder) {
+      var ta = $("body");
+      var sel = ta.value.slice(ta.selectionStart, ta.selectionEnd) || placeholder;
+      replaceSelection(before + sel + after, before.length, before.length + sel.length);
+    }
+
+    function format(kind) {
+      var ta = $("body");
+      if (kind === "bold") return wrap("**", "**", "粗体文字");
+      if (kind === "italic") return wrap("*", "*", "斜体文字");
+      if (kind === "link") {
+        var sel = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+        var url = prompt("链接网址", "https://");
+        if (!url || url === "https://") { ta.focus(); return; }
+        var text = sel || "链接文字";
+        replaceSelection("[" + text + "](" + url.trim() + ")", 1, 1 + text.length);
+      }
+    }
+
+    function colorize(color) {
+      wrap('<span style="color:' + color + '">', "</span>", "彩色文字");
+      $("swatches").hidden = true;
+      $("colorBtn").setAttribute("aria-expanded", "false");
+    }
+
+    $("toolbar").addEventListener("mousedown", function (e) {
+      if (e.target.closest("button")) e.preventDefault(); // 点按钮时保持文字选取
+    });
+    $("toolbar").addEventListener("click", function (e) {
+      var btn = e.target.closest("button");
+      if (!btn) return;
+      if (btn.dataset.fmt) format(btn.dataset.fmt);
+      else if (btn.dataset.color) colorize(btn.dataset.color);
+      else if (btn.id === "colorBtn") {
+        var open = $("swatches").hidden;
+        $("swatches").hidden = !open;
+        btn.setAttribute("aria-expanded", String(open));
+      }
+    });
+    $("body").addEventListener("keydown", function (e) {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
+      var k = e.key.toLowerCase();
+      if (k === "b" || k === "i" || k === "k") {
+        e.preventDefault();
+        format(k === "b" ? "bold" : k === "i" ? "italic" : "link");
+      }
+    });
 
     // ---------- 事件 ----------
     $("newBtn").addEventListener("click", function () { openEditor(null); });
