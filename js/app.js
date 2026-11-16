@@ -34,16 +34,6 @@
     return DOMPurify.sanitize(marked.parse(String(text || "")));
   }
 
-  function makeExcerpt(text) {
-    // 先把 Markdown / HTML 渲染出来，再只取纯文字，这样两种格式都不会露出标记
-    var box = document.createElement("div");
-    box.innerHTML = renderMarkdown(text)
-      .replace(/<br\s*\/?>/gi, " ")
-      .replace(/<\/(p|div|pre|li|h[1-6]|blockquote)>/gi, " $&");
-    var plain = (box.textContent || "").replace(/\s+/g, " ").trim();
-    return plain.length > 90 ? plain.slice(0, 90) + "…" : plain;
-  }
-
   // ---------- 本地缓存：先显示上次的内容，再静默更新 ----------
   function readCache() {
     try {
@@ -73,13 +63,13 @@
     page = Math.min(Math.max(page || 1, 1), total);
     document.title = page > 1 ? "第 " + page + " 页 - " + SITE_TITLE : SITE_TITLE;
 
-    // 只处理当前页的五篇，其余文章不渲染、不生成摘要
+    // 只渲染当前页的五篇全文，其余文章不渲染
     var start = (page - 1) * PAGE_SIZE;
     var items = posts.slice(start, start + PAGE_SIZE).map(function (p) {
       return '<li class="post-item">' +
         '<time datetime="' + isoDate(p.time) + '">' + formatDate(p.time) + "</time>" +
         '<h2><a href="#p-' + encodeURIComponent(p.id) + '">' + escapeHtml(p.title || "无题") + "</a></h2>" +
-        "<p>" + escapeHtml(makeExcerpt(p.body)) + "</p>" +
+        '<div class="post-body">' + renderMarkdown(p.body) + "</div>" +
         "</li>";
     }).join("");
 

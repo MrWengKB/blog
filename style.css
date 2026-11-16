@@ -63,18 +63,18 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-
 }
 
 .post-list { list-style: none; margin: 0; padding: 0; }
-.post-item { padding: 1.6rem 0; border-top: 1px solid var(--rule); }
+.post-item { padding: 2.2rem 0; border-top: 1px solid var(--rule); }
 .post-item:last-child { border-bottom: 1px solid var(--rule); }
-.post-item time {
+.post-item > time {
   display: block;
   font-family: var(--sans);
   font-size: 0.85rem;
   color: var(--muted);
 }
-.post-item h2 { margin: 0.2rem 0 0.4rem; font-size: 1.35rem; line-height: 1.4; }
-.post-item h2 a { color: var(--ink); text-decoration: none; }
-.post-item h2 a:hover { color: var(--accent); }
-.post-item p { margin: 0; color: var(--muted); font-size: 1rem; }
+.post-item > h2 { margin: 0.2rem 0 1.2rem; font-size: 1.35rem; line-height: 1.4; }
+.post-item > h2 a { color: var(--ink); text-decoration: none; }
+.post-item > h2 a:hover { color: var(--accent); }
+.post-item .post-body > :last-child { margin-bottom: 0; }
 
 /* ---------- 单篇文章 ---------- */
 .back {
