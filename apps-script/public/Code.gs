@@ -1,6 +1,6 @@
 /**
  * 贴到 Google Sheet 的“扩展程序 → Apps Script”里（整段替换旧代码）。
- * 表单需开启“收集电子邮件地址”，列顺序：时间戳 | 电子邮件地址 | 标题 | 内容
+ * 列顺序：时间戳 | 电子邮件地址 | 标题 | 内容（文章由管理后台写入）
  *
  * 另外需要在“项目设置 → 脚本属性”里添加：
  *   GITHUB_TOKEN = 你在 GitHub 生成的细粒度令牌
@@ -38,12 +38,6 @@ function doGet(e) {
   return json_(out);
 }
 
-// 设为“提交表单时”触发器：清缓存，并通知 GitHub 重新生成网站
-function onFormSubmitHandler() {
-  clearCache();
-  notifyGitHub();
-}
-
 // 直接在 Sheet 里改了文章后，可以手动运行这个函数，让网站立刻更新
 function notifyGitHub() {
   const token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
@@ -65,17 +59,6 @@ function notifyGitHub() {
 
 function clearCache() {
   CacheService.getScriptCache().remove('posts');
-}
-
-// 运行一次即可：把表单提交触发器换成 onFormSubmitHandler
-function setupTrigger() {
-  ScriptApp.getProjectTriggers().forEach(function (t) {
-    if (t.getEventType() === ScriptApp.EventType.ON_FORM_SUBMIT) ScriptApp.deleteTrigger(t);
-  });
-  ScriptApp.newTrigger('onFormSubmitHandler')
-    .forSpreadsheet(SpreadsheetApp.getActive())
-    .onFormSubmit()
-    .create();
 }
 
 function json_(text) {
