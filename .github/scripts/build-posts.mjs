@@ -33,7 +33,7 @@ function localParts(value) {
       hour: "2-digit", minute: "2-digit", second: "2-digit",
     }).formatToParts(d).map((x) => [x.type, x.value])
   );
-  return { day: `${p.year}-${p.month}-${p.day}`, full: `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second} +0800` };
+  return { day: `${p.year}-${p.month}-${p.day}`, clock: `${p.hour}${p.minute}${p.second}`, full: `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second} +0800` };
 }
 
 marked.setOptions({ gfm: true, breaks: true }); // 表单里的单个换行也保留
@@ -61,7 +61,9 @@ for (const post of posts) {
     "row: " + JSON.stringify(post.id),
     "---",
   ].join("\n");
-  const file = path.join(POSTS_DIR, `${t.day}-${post.id}.html`);
+  // 文件名用发布时间而不是行号：表单插入新行会让行号变动，网址必须保持不变
+  const file = path.join(POSTS_DIR, `${t.day}-${t.clock}.html`);
+  if (fs.existsSync(file)) throw new Error("两篇文章的发布时间完全相同：" + file);
   fs.writeFileSync(file, `${front}\n{% raw %}\n${html}{% endraw %}\n`);
   written++;
 }
