@@ -134,6 +134,8 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-
   font-size: 0.85rem;
   color: var(--muted);
 }
+.colophon a { color: var(--muted); }
+.colophon a:hover { color: var(--ink); }
 
 @media (max-width: 480px) {
   body { font-size: 17px; }

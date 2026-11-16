@@ -11,6 +11,9 @@ baseurl: /blog
 # 文章数据来源：Apps Script 网页应用（由 GitHub Actions 读取）
 blog_api_url: https://script.google.com/macros/s/AKfycbw1X53BRam7KijP2rsXKf6zFl7KwshLNyFtQGnX_xsgGrM9XkJLyWN_Dzovo3Us_ug/exec
 
+# 管理后台（只有博主本人能打开）
+admin_url: https://script.google.com/macros/s/AKfycbzu40lKd2oJw1yRZN_oMwaXAiU-VxHgZ-hFphwflUIeAwdCPyBuwnnuEY_r7qFYTJ8/exec
+
 permalink: /:year/:month/:day/:title/
 plugins:
   - jekyll-paginate
